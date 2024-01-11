@@ -1,0 +1,27 @@
+#!/usr/bin/python3
+"""
+Module that provides function for determining if all
+boxes in given list can be opened.
+"""
+
+
+def canUnlockAll(boxes):
+    """
+        This function takes list of lists and returns boolean indicating
+        whether all boxes in list can be opened. A key with same
+        number as box opens that box. You can assume all keys will be
+        positive integers. 
+        There can be keys that do not have boxes.
+        First box boxes[0] is unlocked.
+    """
+    box_len = len(boxes)
+    viewed_boxes = set([0])
+    unviewed_boxes = set(boxes[0]).difference(set([0]))
+    while len(unviewed_boxes) > 0:
+        box_indx = unviewed_boxes.pop()
+        if not box_indx or box_indx >= box_len or box_indx < 0:
+            continue
+        if box_indx not in viewed_boxes:
+            unviewed_boxes = unviewed_boxes.union(boxes[box_indx])
+            viewed_boxes.add(box_indx)
+    return box_len == len(viewed_boxes)

@@ -5,14 +5,10 @@ boxes in a given list can be opened.
 """
 
 
-def look_next_opened_box(opened_boxes):
-    """Looks for the next opened box
-    Args:
-        opened_boxes (dict): Dictionary which contains boxes already opened
-    Returns:
-        list: List with the keys contained in the opened box
+def next_open_box(open_boxes):
+    """Looks for next opened box
     """
-    for index, box in opened_boxes.items():
+    for index, box in open_boxes.items():
         if box.get('status') == 'opened':
             box['status'] = 'opened/checked'
             return box.get('keys')
@@ -21,42 +17,38 @@ def look_next_opened_box(opened_boxes):
 
 def canUnlockAll(boxes):
     """Check if all boxes can be opened
-    Args:
-        boxes (list): List which contain all the boxes with the keys
-    Returns:
-        bool: True if all boxes can be opened, otherwise, False
     """
     if len(boxes) <= 1 or boxes == [[]]:
         return True
 
-    aux = {}
+    bx_aux = {}
     while True:
-        if len(aux) == 0:
-            aux[0] = {
+        if len(bx_aux) == 0:
+            bx_aux[0] = {
                 'status': 'opened',
                 'keys': boxes[0],
             }
-        keys = look_next_opened_box(aux)
-        if keys:
-            for key in keys:
+        bx_keys = next_open_box(bx_aux)
+        if bx_keys:
+            for k in bx_keys:
                 try:
-                    if aux.get(key) and aux.get(key).get('status') \
+                    if bx_aux.get(k) and bx_aux.get(k).get('status') \
                        == 'opened/checked':
                         continue
-                    aux[key] = {
+                    bx_aux[k] = {
                         'status': 'opened',
-                        'keys': boxes[key]
+                        'keys': boxes[k]
                     }
                 except (KeyError, IndexError):
                     continue
-        elif 'opened' in [box.get('status') for box in aux.values()]:
+        elif 'opened' in [box.get('status') for box in bx_aux.values()]:
             continue
-        elif len(aux) == len(boxes):
+        elif len(bx_aux) == len(boxes):
             break
         else:
             return False
 
-    return len(aux) == len(boxes)
+    return len(bx_aux) == len(boxes)
 
 
 def main():

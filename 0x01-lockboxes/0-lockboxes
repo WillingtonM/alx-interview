@@ -9,19 +9,23 @@ def canUnlockAll(boxes):
     """
         This function takes list of lists and returns boolean indicating
         whether all boxes in list can be opened. A key with same
-        number as box opens that box. You can assume all keys will be
+        number as box opens that box. You can assume all b_keys will be
         positive integers. 
-        There can be keys that do not have boxes.
+        There can be b_keys that do not have boxes.
         First box boxes[0] is unlocked.
     """
-    box_len = len(boxes)
-    viewed_boxes = set([0])
-    unviewed_boxes = set(boxes[0]).difference(set([0]))
-    while len(unviewed_boxes) > 0:
-        box_indx = unviewed_boxes.pop()
-        if not box_indx or box_indx >= box_len or box_indx < 0:
-            continue
-        if box_indx not in viewed_boxes:
-            unviewed_boxes = unviewed_boxes.union(boxes[box_indx])
-            viewed_boxes.add(box_indx)
-    return box_len == len(viewed_boxes)
+    if (type(boxes) is not list):
+        return False
+
+    if (len(boxes) == 0):
+        return False
+
+    b_keys = [0]
+    for x in b_keys:
+        for y in boxes[x]:
+            if y not in b_keys and y != x and y < len(boxes) and y != 0:
+                b_keys.append(y)
+    if len(b_keys) == len(boxes):
+        return True
+    else:
+        return False

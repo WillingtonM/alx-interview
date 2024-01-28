@@ -3,40 +3,35 @@
 script that reads stdin line by line & computes metrics:
 """
 import sys
-
-size_total = 0
-counter = 0
-status_codes = {'200': 0, '301': 0, '400': 0, '401': 0, '403': 0,
-                '404': 0, '405': 0, '500': 0}
-
+x = 0
+size_file = 0
+code_status = {'200': 0, '301': 0, '400': 0, '401': 0, '403': 0,
+               '404': 0, '405': 0, '500': 0}
 
 try:
     for line in sys.stdin:
-        line_list = line.split(" ")
-
-        if len(line_list) > 4:
-            code = line_list[-2]
-            size = int(line_list[-1])
-
-            if code in status_codes.keys():
-                status_codes[code] += 1
-
-            size_total += size
-            counter += 1
-
-        if counter == 10:
-            counter = 0
-            print('File size: {}'.format(size_total))
-
-            for k, v in sorted(status_codes.items()):
-                if v != 0:
-                    print('{}: {}'.format(k, v))
-
-except Exception as err:
+        args = line.split(' ')
+        if len(args) > 2:
+            line_status = args[-2]
+            file_size = args[-1]
+            if line_status in code_status:
+                code_status[line_status] += 1
+            size_file += int(file_size)
+            x += 1
+            if x == 10:
+                print('File size: {:d}'.format(size_file))
+                keys_sorted = sorted(code_status.keys())
+                for k in keys_sorted:
+                    val = code_status[k]
+                    if val != 0:
+                        print('{}: {}'.format(k, val))
+                x = 0
+except Exception:
     pass
-
 finally:
-    print('File size: {}'.format(size_total))
-    for k, v in sorted(status_codes.items()):
-        if v != 0:
-            print('{}: {}'.format(k, v))
+    print('File size: {:d}'.format(size_file))
+    keys_sorted = sorted(code_status.keys())
+    for k in keys_sorted:
+        val = code_status[k]
+        if val != 0:
+            print('{}: {}'.format(k, val))

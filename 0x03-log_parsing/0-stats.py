@@ -2,9 +2,9 @@
 """
 script that reads stdin line by line & computes metrics:
 """
-
-
 import re
+
+
 def extrct_inpt(input_line):
     '''Extracts sections of a line of an HTTP request log.
     '''
@@ -18,8 +18,8 @@ def extrct_inpt(input_line):
         'status_code': 0,
         'file_size': 0,
     }
-    fmt_log = '{}\\-{}{}{}{}\\s*'.format(fp_[0], fp_[1], fp_[2], fp_[3], fp_[4])
-    match_resp = re.fullmatch(fmt_log, input_line)
+    fm_log = '{}\\-{}{}{}{}\\s*'.format(fp_[0], fp_[1], fp_[2], fp_[3], fp_[4])
+    match_resp = re.fullmatch(fm_log, input_line)
     if match_resp is not None:
         state_code = match_resp.group('status_code')
         file_size = int(match_resp.group('file_size'))

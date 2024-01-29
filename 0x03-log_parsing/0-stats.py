@@ -6,8 +6,9 @@ import re
 
 
 def extrct_inpt(input_line):
-    '''Extracts sections of a line of an HTTP request log.
-    '''
+    """
+        Extracts sections of line of an HTTP request log.
+    """
     fp_ = (
         r'\s*(?P<ip>\S+)\s*',
         r'\s*\[(?P<date>\d+\-\d+\-\d+ \d+:\d+:\d+\.\d+)\]',
@@ -40,14 +41,15 @@ def msg_printer(file_size_total, sc_stats):
 
 
 def updt_metrics(line, file_size_total, sc_stats):
-    '''Updates the metrics from a given HTTP request log.
+    """
+    Updates metrics from given HTTP request log.
 
     Args:
-        line (str): The line of input from which to retrieve the metrics.
+        line (str): line of input from which to retrieve metrics.
 
     Returns:
-        int: The new total file size.
-    '''
+        int: new total file size.
+    """
     data_lne = extrct_inpt(line)
     sc_stats = data_lne.get('status_code', '0')
     if sc_stats in sc_stats.keys():
@@ -56,8 +58,9 @@ def updt_metrics(line, file_size_total, sc_stats):
 
 
 def run():
-    '''Starts the log parser.
-    '''
+    """
+        Starts log parser.
+    """
     num_lne = 0
     file_size_total = 0
     sc_stats = {

@@ -2,49 +2,88 @@
 """
 script that reads stdin line by line & computes metrics:
 """
-import sys
 
 
-def msg_printer(status_code_dict, file_size_total):
+import re
+def extrct_inpt(input_line):
+    '''Extracts sections of a line of an HTTP request log.
+    '''
+    fp_ = (
+        r'\s*(?P<ip>\S+)\s*',
+        r'\s*\[(?P<date>\d+\-\d+\-\d+ \d+:\d+:\d+\.\d+)\]',
+        r'\s*"(?P<request>[^"]*)"\s*', r'\s*(?P<status_code>\S+)',
+        r'\s*(?P<file_size>\d+)'
+    )
+    data = {
+        'status_code': 0,
+        'file_size': 0,
+    }
+    fmt_log = '{}\\-{}{}{}{}\\s*'.format(fp_[0], fp_[1], fp_[2], fp_[3], fp_[4])
+    match_resp = re.fullmatch(fmt_log, input_line)
+    if match_resp is not None:
+        state_code = match_resp.group('status_code')
+        file_size = int(match_resp.group('file_size'))
+        data['status_code'] = state_code
+        data['file_size'] = file_size
+    return data
+
+
+def msg_printer(file_size_total, sc_stats):
     """
-    Method to print message
+        Prints accumulated statistics of HTTP request log.
+    """
+    print('File size: {:d}'.format(file_size_total), flush=True)
+    for sc_stats in sorted(sc_stats.keys()):
+        num = sc_stats.get(sc_stats, 0)
+        if num > 0:
+            print('{:s}: {:d}'.format(sc_stats, num), flush=True)
+
+
+def updt_metrics(line, file_size_total, sc_stats):
+    '''Updates the metrics from a given HTTP request log.
+
     Args:
-        status_code_dict: dictionary of status codes
-        file_size_total: total of file
+        line (str): The line of input from which to retrieve the metrics.
+
     Returns:
-        Nothing
-    """
+        int: The new total file size.
+    '''
+    data_lne = extrct_inpt(line)
+    sc_stats = data_lne.get('status_code', '0')
+    if sc_stats in sc_stats.keys():
+        sc_stats[sc_stats] += 1
+    return file_size_total + data_lne['file_size']
 
-    print("File size: {}".format(file_size_total))
-    for k, val in sorted(status_code_dict.items()):
-        if val != 0:
-            print("{}: {}".format(k, val))
+
+def run():
+    '''Starts the log parser.
+    '''
+    num_lne = 0
+    file_size_total = 0
+    sc_stats = {
+        '200': 0,
+        '301': 0,
+        '400': 0,
+        '401': 0,
+        '403': 0,
+        '404': 0,
+        '405': 0,
+        '500': 0,
+    }
+    try:
+        while True:
+            line = input()
+            file_size_total = updt_metrics(
+                line,
+                file_size_total,
+                sc_stats,
+            )
+            num_lne += 1
+            if num_lne % 10 == 0:
+                msg_printer(file_size_total, sc_stats)
+    except (KeyboardInterrupt, EOFError):
+        msg_printer(file_size_total, sc_stats)
 
 
-file_size_total = 0
-count = 0
-code = 0
-status_code_dict = {"200": 0, "301": 0, "400": 0,
-                    "401": 0, "403": 0, "404": 0, "405": 0, "500": 0}
-
-try:
-    for lne in sys.stdin:
-        prsd_line = lne.split()
-        prsd_line = prsd_line[::-1]
-
-        if len(prsd_line) > 2:
-            count += 1
-
-            if count <= 10:
-                file_size_total += int(prsd_line[0])  # file size
-                code = prsd_line[1]  # status code
-
-                if (code in status_code_dict.keys()):
-                    status_code_dict[code] += 1
-
-            if (count == 10):
-                msg_printer(status_code_dict, file_size_total)
-                count = 0
-
-finally:
-    msg_printer(status_code_dict, file_size_total)
+if __name__ == '__main__':
+    run()

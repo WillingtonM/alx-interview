@@ -3,35 +3,48 @@
 script that reads stdin line by line & computes metrics:
 """
 import sys
-x = 0
-size_file = 0
-code_status = {'200': 0, '301': 0, '400': 0, '401': 0, '403': 0,
-               '404': 0, '405': 0, '500': 0}
+
+
+def msg_printer(status_code_dict, file_size_total):
+    """
+    Method to print message
+    Args:
+        status_code_dict: dictionary of status codes
+        file_size_total: total of file
+    Returns:
+        Nothing
+    """
+
+    print("File size: {}".format(file_size_total))
+    for k, val in sorted(status_code_dict.items()):
+        if val != 0:
+            print("{}: {}".format(k, val))
+
+
+file_size_total = 0
+count = 0
+code = 0
+status_code_dict = {"200": 0, "301": 0, "400": 0,
+                    "401": 0, "403": 0, "404": 0, "405": 0, "500": 0}
 
 try:
-    for line in sys.stdin:
-        args = line.split(' ')
-        if len(args) > 2:
-            line_status = args[-2]
-            file_size = args[-1]
-            if line_status in code_status:
-                code_status[line_status] += 1
-            size_file += int(file_size)
-            x += 1
-            if x == 10:
-                print('File size: {:d}'.format(size_file))
-                keys_sorted = sorted(code_status.keys())
-                for k in keys_sorted:
-                    val = code_status[k]
-                    if val != 0:
-                        print('{}: {}'.format(k, val))
-                x = 0
-except Exception:
-    pass
+    for lne in sys.stdin:
+        prsd_line = lne.split()
+        prsd_line = prsd_line[::-1]
+
+        if len(prsd_line) > 2:
+            count += 1
+
+            if count <= 10:
+                file_size_total += int(prsd_line[0])  # file size
+                code = prsd_line[1]  # status code
+
+                if (code in status_code_dict.keys()):
+                    status_code_dict[code] += 1
+
+            if (count == 10):
+                msg_printer(status_code_dict, file_size_total)
+                count = 0
+
 finally:
-    print('File size: {:d}'.format(size_file))
-    keys_sorted = sorted(code_status.keys())
-    for k in keys_sorted:
-        val = code_status[k]
-        if val != 0:
-            print('{}: {}'.format(k, val))
+    msg_printer(status_code_dict, file_size_total)

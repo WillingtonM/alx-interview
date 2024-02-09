@@ -90,7 +90,7 @@ def get_sols():
         Gets solutions for given chessboard size.
     """
     global postn, n_size
-    postn = list(map(lambda x: [x // n, x % n], range(n ** 2)))
+    postn = list(map(lambda x: [x // n_size, x % n_size], range(n_size ** 2)))
     a = 0
     group_sol = []
     build_sols(a, group_sol)

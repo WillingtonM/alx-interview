@@ -1,18 +1,17 @@
 #!/usr/bin/python3
-"""N Queens placement on NxN chessboard"""
-
-
+"""N Queens placement on NxN chessboard."""
 import sys
 
 
 def generate_sols(row, column):
     """
-    solve simple N x N matrix
+    Solve simple N x N matrix.
+
     Args:
-        row: # of rows
-        column: # of columns
+        row: # of rows.
+        column: # of columns.
     Returns:
-        returns a list of lists
+        returns a list of lists.
     """
     sols = [[]]
     for queen in range(row):
@@ -22,11 +21,12 @@ def generate_sols(row, column):
 
 def queen_placing(queen, column, prev_sols):
     """
-    Place queen at certain position
+    Place queen at certain position.
+
     Args:
-        queen: Queen
-        column: Column to move
-        prev_sols: Previous move
+        queen: Queen.
+        column: Column to move.
+        prev_sols: Previous move.
     Returns: list
     """
     safe_pos = []
@@ -39,12 +39,13 @@ def queen_placing(queen, column, prev_sols):
 
 def safety(q_, x_, array):
     """
-    check if safe to make move
+    Check if safe to make move.
+
     Args:
-        q: row to move to
-        x: column to move to
-        array (array): the matrix
-    Returns: boolean
+        q: row to move to.
+        x: column to move to.
+        array (array): the matrix.
+    Returns: boolean.
     """
     if x_ in array:
         return (False)
@@ -55,9 +56,10 @@ def safety(q_, x_, array):
 
 def init():
     """
-        Initialize game
-        Args: function takes no args
-        Returns: returns integer
+    Initialize game.
+
+    Args: function takes no args
+    Returns: returns integer
     """
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
@@ -75,9 +77,10 @@ def init():
 
 def n_queens():
     """
-        Main entry point
-        Args: can be called without passing args
-        Returns None
+    Print n queens as a main entry point.
+
+    Args: can be called without passing args.
+    Returns: None.
     """
     n = init()
     sols = generate_sols(n, n)

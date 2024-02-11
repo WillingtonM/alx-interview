@@ -1,66 +1,92 @@
 #!/usr/bin/python3
-"""
-    N queens solution finder module.
-"""
+"""N Queens placement on NxN chessboard"""
+
+
 import sys
 
 
-def backtracks(rw, nm, culumns, pos, neg, board):
+def generate_sols(row, column):
     """
-    function: backtrack to find solution
+    solve simple N x N matrix
+    Args:
+        row: # of rows
+        column: # of columns
+    Returns:
+        returns a list of lists
     """
-    if rw == nm:
-        res = []
-        for b_len in range(len(board)):
-            for k_len in range(len(board[b_len])):
-                if board[b_len][k_len] == 1:
-                    res.append([b_len, k_len])
-        print(res)
-        return
-
-    for k in range(nm):
-        if k in culumns or (rw + k) in pos or (rw - k) in neg:
-            continue
-
-        culumns.add(k)
-        pos.add(rw + k)
-        neg.add(rw - k)
-        board[rw][k] = 1
-
-        backtracks(rw+1, nm, culumns, pos, neg, board)
-
-        culumns.remove(k)
-        pos.remove(rw + k)
-        neg.remove(rw - k)
-        board[rw][k] = 0
+    sols = [[]]
+    for queen in range(row):
+        sols = queen_placing(queen, column, sols)
+    return sols
 
 
-def n_queens(n):
+def queen_placing(queen, column, prev_sols):
     """
-    Solution to n_queens problem
-    Args (n): number of queens and must be >= 4
-    Returns: List of lists repr. coordinates of each
-        queen for all possible solutions
+    Place queen at certain position
+    Args:
+        queen: Queen
+        column: Column to move
+        prev_sols: Previous move
+    Returns: list
     """
-    negv_diag = set()
-    posv_diag = set()
-    culumns = set()
-    board = [[0] * n for k in range(n)]
+    safe_pos = []
+    for arr in prev_sols:
+        for y in range(column):
+            if safety(queen, y, arr):
+                safe_pos.append(arr + [y])
+    return safe_pos
 
-    backtracks(0, n, culumns, posv_diag, negv_diag, board)
+
+def safety(q_, x_, array):
+    """
+    check if safe to make move
+    Args:
+        q: row to move to
+        x: column to move to
+        array (array): the matrix
+    Returns: boolean
+    """
+    if x_ in array:
+        return (False)
+    else:
+        return all(abs(array[column] - x_) != q_ - column
+                   for column in range(q_))
 
 
-if __name__ == "__main__":
-    n = sys.argv
-    if len(n) != 2:
-        print("Usage: n_queens N")
+def init():
+    """
+        Initialize game
+        Args: function takes no args
+        Returns: returns integer
+    """
+    if len(sys.argv) != 2:
+        print("Usage: nqueens N")
         sys.exit(1)
-    try:
-        n_n = int(n[1])
-        if n_n < 4:
-            print("N must be at least 4")
-            sys.exit(1)
-        n_queens(n_n)
-    except ValueError:
+    if sys.argv[1].isdigit():
+        n = int(sys.argv[1])
+    else:
         print("N must be a number")
         sys.exit(1)
+    if n < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+    return (n)
+
+
+def n_queens():
+    """
+        Main entry point
+        Args: can be called without passing args
+        Returns None
+    """
+    n = init()
+    sols = generate_sols(n, n)
+    for arr in sols:
+        clean_sol = []
+        for p, q in enumerate(arr):
+            clean_sol.append([p, q])
+        print(clean_sol)
+
+
+if __name__ == '__main__':
+    n_queens()

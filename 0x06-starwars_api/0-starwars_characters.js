@@ -1,22 +1,25 @@
-#!/usr/bin/node
+#!/usr/bin/nodenumFilm
 // A script that prints all characters of Star Wars movie
+const request = require('request');
 
-const util = require('util');
-const request = util.promisify(require('request'));
-const movieID = process.argv[2];
+const numFilm = process.argv[2] + '/';
+const endpoint = 'https://swapi-api.hbtn.io/api/films/';
 
-async function starwarsCharacters (movieID) {
-  const endpnt = 'https://swapi-api.hbtn.io/api/films/' + movieID;
-  let resp = await (await request(endpnt)).body;
-  resp = JSON.parse(resp);
-  const chars = resp.characters;
+// Makes API request to get film information
+request(endpoint + numFilm, async function (err, res, body) {
+  if (err) return console.error(err);
 
-  for (let x = 0; x < chars.length; x++) {
-    const urlCharacter = chars[x];
-    let character = await (await request(urlCharacter)).body;
-    character = JSON.parse(character);
-    console.log(character.name);
+  // Parse response body to get the list of character URLs
+  const charURLList = JSON.parse(body).characters;
+
+  for (const charURL of charURLList) {
+    await new Promise(function (resolve, reject) {
+      request(charURL, function (err, res, body) {
+        if (err) return console.error(err);
+
+        console.log(JSON.parse(body).name);
+        resolve();
+      });
+    });
   }
-}
-
-starwarsCharacters(movieID);
+});

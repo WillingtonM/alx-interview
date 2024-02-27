@@ -8,7 +8,7 @@ def makeChange(coins, total):
     Determines fewest number of coins needed to meet a given
     amount total when given a pile of coins of different values.
 
-    Returns: 
+    Returns:
         - Fewest number of coins needed to meet total
         - If total is 0 or less, return 0
         - If total not met by any number of coins, return -1
